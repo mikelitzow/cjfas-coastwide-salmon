@@ -18,7 +18,7 @@ run.dat$era <- as.factor(run.dat$era)
 
 # Based on the results in Mueter et al. 2002 CFAS, Mueter et al. 2005 TAFS and the relationships in this correlation plot,
 # we'll define the months to use *three different ways*. 
-# Support for the non-stationary hypothesis will be supported for each set of months,
+# Support for the non-stationary hypothesis will be evaluated for each set of months,
 # and the best set of months (SST time window) will be selected with AICc model selection. 
 # (Note that there are three SST groupings for sockeye, reflecting their more complex life history, 
 # but only 2 for pink & chum).
@@ -108,7 +108,7 @@ p2 <- lme(formula.full, random = ~1 | stock,
 anova(pfull, p2)
 
 # So there isn't any big difference in the AIC scores, but p2 is better, 
-# though there is no support in the likellihood ration test
+# though there is no support in the likelihood ratio test
 # for retaining the autocorrelated structure. 
 # For uniformity with the other spp., where AR(1) residuals are well supported, 
 # we'll retain that structure here. Also, will save as p.sst1 for model comparison.
@@ -348,6 +348,7 @@ method = "ML", correlation=corAR1(form= ~ 1 | stock), data = filter(run.dat, spe
 
 formula.reduced <- 
 as.formula(log(recruits/spawners) ~ 1 + stock:spawners + sst2:region)
+
 s1 <- lme(formula.reduced, random = ~1 | stock,
 method = "ML", correlation=corAR1(form= ~ 1 | stock), data = filter(run.dat, species=="Sockeye"))
 
@@ -400,7 +401,6 @@ arrange(AICc)
 AIC
 
 # Random intercepts random structure is the best model by far. Look at the residuals:
-
 qqnorm(p2, ~ranef(., level=1))
 
 # Now the fixed effects structure.
@@ -537,6 +537,7 @@ cfull <- lme(formula.full, random = ~1 | stock,
 
 formula.reduced <- 
   as.formula(log(recruits/spawners) ~ 1 + stock:spawners + sst3:region)
+
 c1 <- lme(formula.reduced, random = ~1 | stock,
           method = "ML", correlation=corAR1(form= ~ 1 | stock), data = filter(run.dat, species=="Chum"))
 
@@ -574,14 +575,17 @@ chum.aic <- AICc(c.sst1, c.sst3) %>%
 # sst3 is the best for pinks
 formula.full <- 
   as.formula(log(recruits/spawners) ~ 1 + stock:spawners + sst3:region + sst3:region:era)
+
 pbest <- lme(formula.full, random = ~1 | stock,
              method = "REML", correlation=corAR1(form= ~ 1 | stock), data = filter(run.dat, species=="Pink"))
 
 # sst1 is the best for chums and sockeye
 formula.full <- 
   as.formula(log(recruits/spawners) ~ 1 + stock:spawners + sst1:region + sst1:region:era)
+
 sbest <- lme(formula.full, random = ~1 | stock,
              method = "REML", correlation=corAR1(form= ~ 1 | stock), data = filter(run.dat, species=="Sockeye"))
+
 cbest <- lme(formula.full, random = ~1 | stock,
              method = "REML", correlation=corAR1(form= ~ 1 | stock), data = filter(run.dat, species=="Chum"))
 
@@ -656,13 +660,3 @@ mixed.plot <- ggplot(plot, aes(region, effect, fill=era)) + geom_hline(yintercep
   theme(legend.position = c(0.18, 0.85), legend.title = element_blank()) +
   scale_fill_manual(values=cb[c(2,6,2)], breaks=c("Before 1988/89", "After 1988/89", "")) + 
   geom_text(data = label.df, label = label.df$label, size=6)
-
-mixed.plot <-ggplot(plot, aes(region, effect, fill=era)) + 
-  theme_linedraw() +
-  geom_bar(position=dodge, stat="identity") + geom_hline(yintercept = 0, color="black", lwd=0.3) + 
-  geom_errorbar(aes(ymax=UCI, ymin=LCI), position=dodge, width=0.3, size=0.4) +
-  xlab("") + ylab("SST coefficient") + 
-  facet_wrap(~species, scales="free_y") + 
-  theme(legend.position = c(0.11, 0.1), legend.title = element_blank(), legend.key.size = unit(0.14, "in")) +
-  theme(legend.margin = margin(lm,lm,lm,lm,"cm")) +
-  scale_fill_manual(values=cb[c(2,6,2)], breaks=c("Before 1988/89", "After 1988/89", "")) + geom_text(data = label.df, label = label.df$label, size=6)
