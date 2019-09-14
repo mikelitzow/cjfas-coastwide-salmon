@@ -225,7 +225,7 @@ std <- rbind(std, std[1:add,])
 coast.anom <- (coast.sst - mu)/std # difference from seasonal mean as SD!
 
 # now assign each run to a set of coastal cells
-# begin bby defining an object with the lat and long for each cell!
+# begin by defining an object with the lat and long for each cell!
 coast.cells <- data.frame(cell=colnames(coast.sst), lat=lat[keep], long=lon[keep])
 
 # add EBS/GOA factor!
