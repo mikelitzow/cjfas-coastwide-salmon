@@ -345,7 +345,7 @@ plot(gam.late.chum$gam,pages=1,scale=0)
 
 anova(tvc.late.chum$lme,gam.late.chum$lme)
 #tvc.late.chum$lme     1 11 890.2311 934.0821 -434.1156                        
-gam.late.chum$lme     2  9 895.2719 931.1500 -438.6359 1 vs 2 9.040771  0.0109
+#gam.late.chum$lme     2  9 895.2719 931.1500 -438.6359 1 vs 2 9.040771  0.0109
 
 #Plotting results on a map
 covariate<-chum$loc.sst2[chum$era=='1']
